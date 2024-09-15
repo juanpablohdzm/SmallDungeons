@@ -29,6 +29,9 @@ void USDCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick Ti
                                                   FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// Tick the jump time line
+	JumpTimeline.TickTimeline(DeltaTime);
 }
 
 void USDCharacterMovementComponent::DoJumpWithGravity()
