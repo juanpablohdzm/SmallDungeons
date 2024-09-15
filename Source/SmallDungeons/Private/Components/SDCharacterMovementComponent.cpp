@@ -29,39 +29,4 @@ void USDCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick Ti
                                                   FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// Tick the jump time line
-	JumpTimeline.TickTimeline(DeltaTime);
-}
-
-void USDCharacterMovementComponent::DoJumpWithGravity()
-{
-	FOnTimelineFloat OnTimelineStep;
-	FOnTimelineEvent OnTimelineEnd;
-	OnTimelineStep.BindUFunction(this, FName("JumpTimelineStep"));
-	OnTimelineEnd.BindUFunction(this, FName("JumpTimelineEnd"));
-	
-	JumpTimeline.AddInterpFloat(JumpGravityCurve, MoveTemp(OnTimelineStep));
-	JumpTimeline.SetTimelineFinishedFunc(MoveTemp(OnTimelineEnd));
-
-	JumpTimeline.Play();
-}
-
-void USDCharacterMovementComponent::StopJumpWithGravity()
-{
-	JumpTimeline.Stop();
-	JumpTimelineFinish();
-}
-
-void USDCharacterMovementComponent::JumpTimelineStep()
-{
-	UE_LOG(LogTemp, Warning, TEXT("JP: Jumptimeline step"));
-	const float PlaybackPosition = JumpTimeline.GetPlaybackPosition();
-	GravityScale = JumpGravityCurve->GetFloatValue(PlaybackPosition);
-}
-
-void USDCharacterMovementComponent::JumpTimelineFinish()
-{
-	UE_LOG(LogTemp, Warning, TEXT("JP: Jumptimeline finish"));
-	GravityScale = DefaultGravityValue;
 }

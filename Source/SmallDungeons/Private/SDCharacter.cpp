@@ -23,12 +23,23 @@ ASDCharacter::ASDCharacter(const FObjectInitializer& ObjectInitializer):
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
+	// Spring arm component
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArmComponent->SetupAttachment(RootComponent);
 	SpringArmComponent->bUsePawnControlRotation = true;
 
+	// Camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	FollowCamera->SetupAttachment(SpringArmComponent);
+
+	// Enhanced Jump
+	FOnTimelineFloat OnTimelineStep;
+	FOnTimelineEvent OnTimelineEnd;
+	OnTimelineStep.BindUFunction(this, FName("JumpTimelineStep"));
+	OnTimelineEnd.BindUFunction(this, FName("JumpTimelineEnd"));
+	
+	JumpTimeline.AddInterpFloat(JumpGravityCurve, MoveTemp(OnTimelineStep));
+	JumpTimeline.SetTimelineFinishedFunc(MoveTemp(OnTimelineEnd));
 
 }
 
@@ -43,6 +54,9 @@ void ASDCharacter::BeginPlay()
 void ASDCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Tick the jump timeline
+	JumpTimeline.TickTimeline(DeltaTime);
 
 }
 
@@ -82,5 +96,38 @@ void ASDCharacter::Look(const FVector2D& Value)
 		AddControllerPitchInput(Value.Y);
 		AddControllerYawInput(Value.X);
 	}
+}
+
+void ASDCharacter::Jump()
+{
+	Super::Jump();
+	JumpTimeline.PlayFromStart();
+}
+
+void ASDCharacter::StopJumping()
+{
+	Super::StopJumping();
+	FinishJump();
+}
+
+void ASDCharacter::ResetJumpState()
+{
+	Super::ResetJumpState();
+
+	JumpTimeline.Stop();
+	GetSDCharacterMovementComponent()->GravityScale = 1.0f;
+}
+
+void ASDCharacter::JumpTimelineStep()
+{
+	const float PlaybackPosition = JumpTimeline.GetPlaybackPosition();
+	GetSDCharacterMovementComponent()->GravityScale = JumpGravityCurve->GetFloatValue(PlaybackPosition);
+}
+
+void ASDCharacter::FinishJump()
+{
+	const float FinalPosition = JumpTimeline.GetTimelineLength();
+	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, FString::Format(TEXT("Jump timeline finish final position {0}"),{FinalPosition}));
+	GetSDCharacterMovementComponent()->GravityScale = JumpGravityCurve->GetFloatValue(FinalPosition);
 }
 

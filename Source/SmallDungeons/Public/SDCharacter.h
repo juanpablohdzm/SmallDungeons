@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/Character.h"
 #include "SDCharacter.generated.h"
 
@@ -28,6 +29,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+	virtual void Jump() override;
+
+	virtual void StopJumping() override;
+	
+	virtual void ResetJumpState() override;
+
+	USDCharacterMovementComponent* GetSDCharacterMovementComponent() const { return SDCharacterMovementComponent;};
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,8 +46,15 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category= Movement)
 	void Look(const FVector2D& Value);
-	
+
+
 private:
+	UFUNCTION()
+	void JumpTimelineStep();
+
+	UFUNCTION()
+	void FinishJump();
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Camera, meta = (AllowPrivateAccess = true))
 	USpringArmComponent* SpringArmComponent;
 
@@ -50,4 +66,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= Movement, meta = (AllowPrivateAccess = true))
 	USDCharacterMovementComponent* SDCharacterMovementComponent;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = true))
+	UCurveFloat* JumpGravityCurve;
+	
+	FTimeline JumpTimeline;
 };
