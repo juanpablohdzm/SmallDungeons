@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/TimelineComponent.h"
 #include "GameFramework/Character.h"
 #include "SDCharacter.generated.h"
 
@@ -27,13 +26,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
-	virtual void Jump() override;
-
 	virtual void StopJumping() override;
 	
-	virtual void ResetJumpState() override;
+	virtual void NotifyJumpApex() override;
+	
+	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode) override;
 
 	USDCharacterMovementComponent* GetSDCharacterMovementComponent() const { return SDCharacterMovementComponent;};
 	
@@ -47,28 +46,26 @@ protected:
 	UFUNCTION(BlueprintCallable, Category= Movement)
 	void Look(const FVector2D& Value);
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Jump)
+	float JumpGravityModifier;
 
-private:
-	UFUNCTION()
-	void JumpTimelineStep();
-
-	UFUNCTION()
-	void FinishJump();
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Jump)
+	float DefaultGravityScale;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Camera, meta = (AllowPrivateAccess = true))
+private:
+
+	void ModifyJumpGravity(float Value) const;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 	USpringArmComponent* SpringArmComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Camera, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 	UCameraComponent* FollowCamera;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = true))
+	USDCharacterMovementComponent* SDCharacterMovementComponent;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	UInputMappingContext* DefaultMappingContext;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= Movement, meta = (AllowPrivateAccess = true))
-	USDCharacterMovementComponent* SDCharacterMovementComponent;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = true))
-	UCurveFloat* JumpGravityCurve;
-	
-	FTimeline JumpTimeline;
 };

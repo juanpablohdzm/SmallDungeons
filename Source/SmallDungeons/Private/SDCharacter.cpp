@@ -14,6 +14,8 @@ ASDCharacter::ASDCharacter(const FObjectInitializer& ObjectInitializer):
 	Super(ObjectInitializer.SetDefaultSubobjectClass<USDCharacterMovementComponent>(CharacterMovementComponentName))
 {
 	SDCharacterMovementComponent = Cast<USDCharacterMovementComponent>(GetCharacterMovement());
+	SDCharacterMovementComponent->bNotifyApex = true;
+	
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -32,32 +34,22 @@ ASDCharacter::ASDCharacter(const FObjectInitializer& ObjectInitializer):
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	FollowCamera->SetupAttachment(SpringArmComponent);
 
-	// Enhanced Jump
-	FOnTimelineFloat OnTimelineStep;
-	FOnTimelineEvent OnTimelineEnd;
-	OnTimelineStep.BindUFunction(this, FName("JumpTimelineStep"));
-	OnTimelineEnd.BindUFunction(this, FName("JumpTimelineEnd"));
-	
-	JumpTimeline.AddInterpFloat(JumpGravityCurve, MoveTemp(OnTimelineStep));
-	JumpTimeline.SetTimelineFinishedFunc(MoveTemp(OnTimelineEnd));
-
+	// Jump
+	JumpGravityModifier = 1.0f;
+	DefaultGravityScale = 1.0f;
 }
 
 // Called when the game starts or when spawned
 void ASDCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ASDCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// Tick the jump timeline
-	JumpTimeline.TickTimeline(DeltaTime);
-
+	GEngine->AddOnScreenDebugMessage(10, 0.1f, FColor::Magenta, FString::Format(TEXT("Current value of gravity: {0}"), {GetSDCharacterMovementComponent()->GravityScale}));
 }
 
 // Called to bind functionality to input
@@ -72,6 +64,37 @@ void ASDCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+}
+
+void ASDCharacter::StopJumping()
+{
+	Super::StopJumping();
+	if (GetSDCharacterMovementComponent()->IsFalling())
+	{
+		ModifyJumpGravity(JumpGravityModifier);
+	}
+}
+
+void ASDCharacter::NotifyJumpApex()
+{
+	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Blue, TEXT("Notify jump apex"));
+	Super::NotifyJumpApex();
+	ModifyJumpGravity(JumpGravityModifier);
+}
+
+void ASDCharacter::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode)
+{
+	if (!bPressedJump || !GetSDCharacterMovementComponent()->IsFalling())
+	{
+		ModifyJumpGravity(DefaultGravityScale);
+		GetSDCharacterMovementComponent()->bNotifyApex = true;
+	}
+	Super::OnMovementModeChanged(PrevMovementMode, PreviousCustomMode);
+}
+
+void ASDCharacter::ModifyJumpGravity(float Value) const
+{
+	GetSDCharacterMovementComponent()->GravityScale = Value;
 }
 
 void ASDCharacter::Move(const FVector2D& Value)
@@ -96,38 +119,5 @@ void ASDCharacter::Look(const FVector2D& Value)
 		AddControllerPitchInput(Value.Y);
 		AddControllerYawInput(Value.X);
 	}
-}
-
-void ASDCharacter::Jump()
-{
-	Super::Jump();
-	JumpTimeline.PlayFromStart();
-}
-
-void ASDCharacter::StopJumping()
-{
-	Super::StopJumping();
-	FinishJump();
-}
-
-void ASDCharacter::ResetJumpState()
-{
-	Super::ResetJumpState();
-
-	JumpTimeline.Stop();
-	GetSDCharacterMovementComponent()->GravityScale = 1.0f;
-}
-
-void ASDCharacter::JumpTimelineStep()
-{
-	const float PlaybackPosition = JumpTimeline.GetPlaybackPosition();
-	GetSDCharacterMovementComponent()->GravityScale = JumpGravityCurve->GetFloatValue(PlaybackPosition);
-}
-
-void ASDCharacter::FinishJump()
-{
-	const float FinalPosition = JumpTimeline.GetTimelineLength();
-	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, FString::Format(TEXT("Jump timeline finish final position {0}"),{FinalPosition}));
-	GetSDCharacterMovementComponent()->GravityScale = JumpGravityCurve->GetFloatValue(FinalPosition);
 }
 
