@@ -33,23 +33,6 @@ ASDCharacter::ASDCharacter(const FObjectInitializer& ObjectInitializer):
 	// Camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	FollowCamera->SetupAttachment(SpringArmComponent);
-
-	// Jump
-	JumpGravityModifier = 1.0f;
-	DefaultGravityScale = 1.0f;
-}
-
-// Called when the game starts or when spawned
-void ASDCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-// Called every frame
-void ASDCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	GEngine->AddOnScreenDebugMessage(10, 0.1f, FColor::Magenta, FString::Format(TEXT("Current value of gravity: {0}"), {GetSDCharacterMovementComponent()->GravityScale}));
 }
 
 // Called to bind functionality to input
@@ -69,32 +52,7 @@ void ASDCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void ASDCharacter::StopJumping()
 {
 	Super::StopJumping();
-	if (GetSDCharacterMovementComponent()->IsFalling())
-	{
-		ModifyJumpGravity(JumpGravityModifier);
-	}
-}
-
-void ASDCharacter::NotifyJumpApex()
-{
-	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Blue, TEXT("Notify jump apex"));
-	Super::NotifyJumpApex();
-	ModifyJumpGravity(JumpGravityModifier);
-}
-
-void ASDCharacter::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode)
-{
-	if (!bPressedJump || !GetSDCharacterMovementComponent()->IsFalling())
-	{
-		ModifyJumpGravity(DefaultGravityScale);
-		GetSDCharacterMovementComponent()->bNotifyApex = true;
-	}
-	Super::OnMovementModeChanged(PrevMovementMode, PreviousCustomMode);
-}
-
-void ASDCharacter::ModifyJumpGravity(float Value) const
-{
-	GetSDCharacterMovementComponent()->GravityScale = Value;
+	GetSDCharacterMovementComponent()->StopJumping();
 }
 
 void ASDCharacter::Move(const FVector2D& Value)

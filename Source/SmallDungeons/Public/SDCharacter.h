@@ -22,39 +22,21 @@ public:
 	// Sets default values for this character's properties
 	ASDCharacter(const FObjectInitializer& ObjectInitializer);
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	
-	virtual void StopJumping() override;
-	
-	virtual void NotifyJumpApex() override;
-	
-	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode) override;
 
 	USDCharacterMovementComponent* GetSDCharacterMovementComponent() const { return SDCharacterMovementComponent;};
-	
+
+	virtual void StopJumping() override;
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable, Category= Movement)
 	void Move(const FVector2D& Value);
 
 	UFUNCTION(BlueprintCallable, Category= Movement)
 	void Look(const FVector2D& Value);
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Jump)
-	float JumpGravityModifier;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Jump)
-	float DefaultGravityScale;
 	
 private:
-
-	void ModifyJumpGravity(float Value) const;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 	USpringArmComponent* SpringArmComponent;

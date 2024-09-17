@@ -10,23 +10,41 @@ USDCharacterMovementComponent::USDCharacterMovementComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	
+	JumpGravityModifier = 6.0f;
 }
 
-
-// Called when the game starts
 void USDCharacterMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
+	DefaultGravityScale = GravityScale;
 }
 
-// Called every frame
-void USDCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                                  FActorComponentTickFunction* ThisTickFunction)
+void USDCharacterMovementComponent::StopJumping()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (IsFalling())
+	{
+		ModifyJumpGravity(JumpGravityModifier);
+	}
+}
+
+void USDCharacterMovementComponent::NotifyJumpApex()
+{
+	Super::NotifyJumpApex();
+	ModifyJumpGravity(JumpGravityModifier);
+}
+
+void USDCharacterMovementComponent::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode)
+{
+	if (!IsFalling())
+	{
+		ModifyJumpGravity(DefaultGravityScale);
+		bNotifyApex = true;
+	}
+	Super::OnMovementModeChanged(PrevMovementMode, PreviousCustomMode);
+}
+
+void USDCharacterMovementComponent::ModifyJumpGravity(float Value)
+{
+	GravityScale = Value;
 }

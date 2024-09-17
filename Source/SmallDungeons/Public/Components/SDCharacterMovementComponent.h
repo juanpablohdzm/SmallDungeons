@@ -15,10 +15,19 @@ public:
 	// Sets default values for this component's properties
 	USDCharacterMovementComponent();
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
-protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
+	
+	virtual void StopJumping();
+	
+	virtual void NotifyJumpApex() override;
+	
+	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode) override;
+
+	void ModifyJumpGravity(float Value);
+private:
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Jump, meta = (AllowPrivateAccess = true))
+	float JumpGravityModifier;
+	
+	float DefaultGravityScale;
 };
