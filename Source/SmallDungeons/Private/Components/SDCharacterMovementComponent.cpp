@@ -36,7 +36,9 @@ void USDCharacterMovementComponent::NotifyJumpApex()
 
 void USDCharacterMovementComponent::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode)
 {
-	if (!IsFalling())
+	bOrientRotationToMovement = !IsFalling();
+	
+	if (PrevMovementMode == MOVE_Falling && !IsFalling())
 	{
 		ModifyJumpGravity(DefaultGravityScale);
 		bNotifyApex = true;
