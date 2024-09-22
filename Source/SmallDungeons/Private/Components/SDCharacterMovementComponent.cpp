@@ -11,7 +11,11 @@ USDCharacterMovementComponent::USDCharacterMovementComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	
-	JumpGravityModifier = 6.0f;
+	JumpGravityModifier = 10.0f;
+	JumpZVelocity = 900.0f;
+	GravityScale = 8.0f;
+	MaxWalkSpeed = 850.0f;
+	RotationRate = FRotator(0.0f, 900.0f, 0.0f);
 }
 
 void USDCharacterMovementComponent::BeginPlay()

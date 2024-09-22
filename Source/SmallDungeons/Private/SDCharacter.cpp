@@ -3,11 +3,14 @@
 
 #include "SDCharacter.h"
 
+#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/SDCharacterMovementComponent.h"
+#include "SDAttributeSet.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ASDCharacter::ASDCharacter(const FObjectInitializer& ObjectInitializer):
@@ -28,11 +31,25 @@ ASDCharacter::ASDCharacter(const FObjectInitializer& ObjectInitializer):
 	// Spring arm component
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArmComponent->SetupAttachment(RootComponent);
-	SpringArmComponent->bUsePawnControlRotation = true;
+	SpringArmComponent->bUsePawnControlRotation = false;
+	SpringArmComponent->bInheritPitch = false;
+	SpringArmComponent->bInheritRoll = false;
+	SpringArmComponent->bInheritYaw = false;
+	SpringArmComponent->SetRelativeRotation(FRotator(-40.0f,0.0f,0.0f));
+	SpringArmComponent->TargetArmLength = 900.0f;
 
 	// Camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	FollowCamera->SetupAttachment(SpringArmComponent);
+
+	//Abilities
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComp"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	
+	AttributeSet = CreateDefaultSubobject<USDAttributeSet>(TEXT("AttributeSet"));
+
+	
 }
 
 // Called to bind functionality to input
@@ -53,6 +70,11 @@ void ASDCharacter::StopJumping()
 {
 	Super::StopJumping();
 	GetSDCharacterMovementComponent()->StopJumping();
+}
+
+UAbilitySystemComponent* ASDCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 void ASDCharacter::Move(const FVector2D& Value)
@@ -79,3 +101,9 @@ void ASDCharacter::Look(const FVector2D& Value)
 	}
 }
 
+void ASDCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASDCharacter, AbilitySystemComponent);
+	DOREPLIFETIME(ASDCharacter, AttributeSet);
+}

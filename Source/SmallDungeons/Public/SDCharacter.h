@@ -4,17 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
 #include "SDCharacter.generated.h"
 
 class USDCharacterMovementComponent;
-struct FInputActionValue;
 class UCameraComponent;
 class USpringArmComponent;
 class UInputMappingContext;
 class UInputAction;
+class UAbilitySystemComponent;
+class USDAttributeSet;
+class FLifetimeProperty;
+
+struct FInputActionValue;
 
 UCLASS()
-class SMALLDUNGEONS_API ASDCharacter : public ACharacter
+class SMALLDUNGEONS_API ASDCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -28,6 +33,10 @@ public:
 	USDCharacterMovementComponent* GetSDCharacterMovementComponent() const { return SDCharacterMovementComponent;};
 
 	virtual void StopJumping() override;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 
 	UFUNCTION(BlueprintCallable, Category= Movement)
@@ -44,10 +53,15 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 	UCameraComponent* FollowCamera;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = true))
 	USDCharacterMovementComponent* SDCharacterMovementComponent;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	UInputMappingContext* DefaultMappingContext;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = Abilities, meta = (AllowPrivateAccess = true))
+	UAbilitySystemComponent* AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = Abilities, meta = (AllowPrivateAccess = true))
+	USDAttributeSet* AttributeSet;
 };
