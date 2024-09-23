@@ -39,11 +39,11 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 
-	UFUNCTION(BlueprintCallable, Category= Movement)
+	UFUNCTION(BlueprintCallable, Category = Movement)
 	void Move(const FVector2D& Value);
 
-	UFUNCTION(BlueprintCallable, Category= Movement)
-	void Look(const FVector2D& Value);
+	UFUNCTION(BlueprintCallable, Category = Movement)
+	void Look(const FVector2D& Value);;
 	
 private:
 	

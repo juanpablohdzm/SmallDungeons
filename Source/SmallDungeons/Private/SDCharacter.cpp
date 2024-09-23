@@ -10,6 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/SDCharacterMovementComponent.h"
 #include "SDAttributeSet.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -81,7 +82,7 @@ void ASDCharacter::Move(const FVector2D& Value)
 {
 	if (Controller)
 	{
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = FollowCamera->GetComponentRotation();
 		const FRotator YawRotation = FRotator(0.0f, Rotation.Yaw, 0.0f);
 
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);

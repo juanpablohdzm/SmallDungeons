@@ -25,6 +25,15 @@
 		{
 			"Name": "GameplayAbilities",
 			"Enabled": true
+		},
+		{
+			"Name": "AGR_Plugin",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/3648e75cbc444e3e9f1a370074515c9d"
+		},
+		{
+			"Name": "DidItHit",
+			"Enabled": true
 		}
 	]
 }
