@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "Interfaces/Interactor.h"
 #include "SDCharacter.generated.h"
 
+class UInteractorComponent;
 class USDCharacterMovementComponent;
 class UCameraComponent;
 class USpringArmComponent;
@@ -19,7 +21,7 @@ class FLifetimeProperty;
 struct FInputActionValue;
 
 UCLASS()
-class SMALLDUNGEONS_API ASDCharacter : public ACharacter, public IAbilitySystemInterface
+class SMALLDUNGEONS_API ASDCharacter : public ACharacter, public IAbilitySystemInterface, public IInteractor
 {
 	GENERATED_BODY()
 
@@ -43,7 +45,13 @@ protected:
 	void Move(const FVector2D& Value);
 
 	UFUNCTION(BlueprintCallable, Category = Movement)
-	void Look(const FVector2D& Value);;
+	void Look(const FVector2D& Value);
+
+	void AddInteractable_Implementation(UObject* Object) override;
+
+	void RemoveInteractable_Implementation(UObject* Object) override;
+
+	UObject* GetInteractable_Implementation() override;
 	
 private:
 	
@@ -64,4 +72,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = Abilities, meta = (AllowPrivateAccess = true))
 	USDAttributeSet* AttributeSet;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = Interaction, meta = (AllowPrivateAccess = true))
+	UInteractorComponent* InteractorComponent;
 };

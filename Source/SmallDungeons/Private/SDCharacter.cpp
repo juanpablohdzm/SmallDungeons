@@ -10,6 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/SDCharacterMovementComponent.h"
 #include "SDAttributeSet.h"
+#include "Components/InteractorComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 
@@ -50,6 +51,8 @@ ASDCharacter::ASDCharacter(const FObjectInitializer& ObjectInitializer):
 	
 	AttributeSet = CreateDefaultSubobject<USDAttributeSet>(TEXT("AttributeSet"));
 
+	//Interaction
+	InteractorComponent = CreateDefaultSubobject<UInteractorComponent>(TEXT("InteractionComp"));
 	
 }
 
@@ -100,6 +103,21 @@ void ASDCharacter::Look(const FVector2D& Value)
 		AddControllerPitchInput(Value.Y);
 		AddControllerYawInput(Value.X);
 	}
+}
+
+void ASDCharacter::AddInteractable_Implementation(UObject* Object)
+{
+	InteractorComponent->AddInteractable(Object);
+}
+
+void ASDCharacter::RemoveInteractable_Implementation(UObject* Object)
+{
+	InteractorComponent->RemoveInteractable(Object);
+}
+
+UObject* ASDCharacter::GetInteractable_Implementation()
+{
+	return InteractorComponent->GetInteractable();
 }
 
 void ASDCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

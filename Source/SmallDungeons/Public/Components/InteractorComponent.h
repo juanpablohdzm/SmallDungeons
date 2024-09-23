@@ -7,10 +7,10 @@
 #include "Interfaces/Interactor.h"
 #include "InteractorComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteractableChanged)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteractableChanged);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class SMALLDUNGEONS_API UInteractorComponent : public UActorComponent, public IInteractor
+class SMALLDUNGEONS_API UInteractorComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -21,10 +21,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Interact();
 
-	void SetInteractable_Implementation(UObject* Object) override;
+	void AddInteractable(UObject* Object);
 
-	UObject* GetInteractable_Implementation() override;
+	void RemoveInteractable(UObject* Object);
+
+	UObject* GetInteractable();
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnInteractableChanged OnInteractableChanged;
+	
 private:
 	UPROPERTY(Transient)
-	TQueue<UObject*> InteractablesQueue;
+	TArray<UObject*> InteractablesQueue;
 };

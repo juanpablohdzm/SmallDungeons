@@ -17,20 +17,34 @@ void UInteractorComponent::Interact()
 	{
 		return;
 	}
-
-	UObject* First;
-	InteractablesQueue.Peek(First);
-	IInteractable::Execute_Interact(Cast<UObject>(First), this);
+	
+	IInteractable::Execute_Interact(InteractablesQueue[0], this);
 }
 
-void UInteractorComponent::SetInteractable_Implementation(UObject* Object)
+void UInteractorComponent::AddInteractable(UObject* Object)
 {
-	if (!Object->Implements<IInteractable>())
-	Interactable = Object;
+	const IInteractable* Interactable = Cast<IInteractable>(Object);
+	if (Interactable || InteractablesQueue.Contains(Object))
+	{
+		return;
+	}
+
+	InteractablesQueue.Add(Object);
+	OnInteractableChanged.Broadcast();
 }
 
-IInteractable* UInteractorComponent::GetInteractable_Implementation()
+void UInteractorComponent::RemoveInteractable(UObject* Object)
 {
-	return Interactable;
+	if (!Object)
+	{
+		return;
+	}
+	InteractablesQueue.Remove(Object);
+	OnInteractableChanged.Broadcast();
+}
+
+UObject* UInteractorComponent::GetInteractable()
+{
+	return InteractablesQueue.Num() > 0 ? InteractablesQueue[0] : nullptr;
 }
 

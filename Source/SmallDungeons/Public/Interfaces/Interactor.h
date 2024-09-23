@@ -24,7 +24,10 @@ class SMALLDUNGEONS_API IInteractor
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void SetInteractable(UObject* Object);
+	void AddInteractable(UObject* Object);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void RemoveInteractable(UObject* Object);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	UObject* GetInteractable();
