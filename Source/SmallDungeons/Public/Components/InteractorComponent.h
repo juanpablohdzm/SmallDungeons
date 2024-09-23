@@ -25,6 +25,7 @@ public:
 
 	void RemoveInteractable(UObject* Object);
 
+	UFUNCTION(BlueprintCallable)
 	UObject* GetInteractable();
 	
 	UPROPERTY(BlueprintAssignable)

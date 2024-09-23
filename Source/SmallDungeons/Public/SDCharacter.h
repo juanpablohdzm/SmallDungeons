@@ -50,9 +50,6 @@ protected:
 	void AddInteractable_Implementation(UObject* Object) override;
 
 	void RemoveInteractable_Implementation(UObject* Object) override;
-
-	UObject* GetInteractable_Implementation() override;
-	
 private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))

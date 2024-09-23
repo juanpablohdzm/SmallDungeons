@@ -28,7 +28,4 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void RemoveInteractable(UObject* Object);
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	UObject* GetInteractable();
 };

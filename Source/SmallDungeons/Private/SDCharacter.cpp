@@ -115,11 +115,6 @@ void ASDCharacter::RemoveInteractable_Implementation(UObject* Object)
 	InteractorComponent->RemoveInteractable(Object);
 }
 
-UObject* ASDCharacter::GetInteractable_Implementation()
-{
-	return InteractorComponent->GetInteractable();
-}
-
 void ASDCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
