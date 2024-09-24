@@ -10,6 +10,7 @@ public class SmallDungeons : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
+			"AGR_Inventory_Runtime",
 			"Core", 
 			"CoreUObject", 
 			"Engine", 

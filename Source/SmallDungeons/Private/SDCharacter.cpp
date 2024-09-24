@@ -4,14 +4,14 @@
 #include "SDCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AGR_Inventory_Runtime/Public/Inventory/Components/AGR_InventoryComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "SDAttributeSet.h"
 #include "Camera/CameraComponent.h"
+#include "Components/InteractorComponent.h"
+#include "Components/SDCharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "Components/SDCharacterMovementComponent.h"
-#include "SDAttributeSet.h"
-#include "Components/InteractorComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -53,6 +53,9 @@ ASDCharacter::ASDCharacter(const FObjectInitializer& ObjectInitializer):
 
 	//Interaction
 	InteractorComponent = CreateDefaultSubobject<UInteractorComponent>(TEXT("InteractionComp"));
+
+	//Inventory
+	InventoryComponent = CreateDefaultSubobject<UAGR_InventoryComponent>(TEXT("InventoryComp"));
 	
 }
 

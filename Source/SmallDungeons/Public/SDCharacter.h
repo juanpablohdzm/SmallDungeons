@@ -17,6 +17,7 @@ class UInputAction;
 class UAbilitySystemComponent;
 class USDAttributeSet;
 class FLifetimeProperty;
+class UAGR_InventoryComponent;
 
 struct FInputActionValue;
 
@@ -69,7 +70,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = Abilities, meta = (AllowPrivateAccess = true))
 	USDAttributeSet* AttributeSet;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = Inventory, meta = (AllowPrivateAccess = true))
+	UAGR_InventoryComponent* InventoryComponent;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = Interaction, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	UInteractorComponent* InteractorComponent;
 };
