@@ -17,17 +17,34 @@ ASDItem::ASDItem()
 	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetRootComponent(MeshComponent);
 
 	InteractionCollider = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionCollider"));
 	InteractionCollider->SetupAttachment(GetRootComponent());
 	InteractionCollider->SetSphereRadius(180.0f);
 	InteractionCollider->SetGenerateOverlapEvents(true);
-	InteractionCollider->SetCollisionObjectType(ECC_EngineTraceChannel1);
 	
 	ItemComponent = CreateDefaultSubobject<UAGR_ItemComponent>(TEXT("ItemComp"));
 	ItemComponent->bIsStackable = true;
 	ItemComponent->MaxStackCount = 99;
+}
+
+void ASDItem::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	ItemComponent->OnItemPickedUp.AddDynamic(this, &ASDItem::OnItemPickedUpNative);
+	ItemComponent->OnItemDropped.AddDynamic(this, &ASDItem::OnItemDroppedNative);
+}
+
+void ASDItem::OnItemPickedUpNative(const UAGR_InventoryComponent* InventoryComponent)
+{
+	InteractionCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ASDItem::OnItemDroppedNative(const UAGR_InventoryComponent* InventoryComponent, const FVector& DropLocation)
+{
+	InteractionCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void ASDItem::Interact_Implementation(UObject* OtherInstigator)

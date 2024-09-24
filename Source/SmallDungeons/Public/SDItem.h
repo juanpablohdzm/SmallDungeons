@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SDCharacter.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Interactable.h"
 #include "SDItem.generated.h"
@@ -22,6 +23,16 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	virtual void Interact_Implementation(UObject* OtherInstigator) override;
+
+	virtual void PostInitializeComponents() override;
+	
+protected:
+	UFUNCTION()
+	virtual void OnItemPickedUpNative(const UAGR_InventoryComponent* InventoryComponent);
+	
+	UFUNCTION()
+	virtual void OnItemDroppedNative(const UAGR_InventoryComponent* InventoryComponent, const FVector& DropLocation);
+	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* MeshComponent;
