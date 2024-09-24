@@ -79,11 +79,6 @@ void ASDCharacter::StopJumping()
 	GetSDCharacterMovementComponent()->StopJumping();
 }
 
-UAbilitySystemComponent* ASDCharacter::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComponent;
-}
-
 void ASDCharacter::Move(const FVector2D& Value)
 {
 	if (Controller)
@@ -123,4 +118,5 @@ void ASDCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASDCharacter, AbilitySystemComponent);
 	DOREPLIFETIME(ASDCharacter, AttributeSet);
+	DOREPLIFETIME(ASDCharacter, InventoryComponent);
 }

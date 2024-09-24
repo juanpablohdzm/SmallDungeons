@@ -3,8 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "GameFramework/Character.h"
+#include "Interfaces\InventoryHolder.h"
 #include "Interfaces/Interactor.h"
 #include "SDCharacter.generated.h"
 
@@ -22,7 +23,11 @@ class UAGR_InventoryComponent;
 struct FInputActionValue;
 
 UCLASS()
-class SMALLDUNGEONS_API ASDCharacter : public ACharacter, public IAbilitySystemInterface, public IInteractor
+class SMALLDUNGEONS_API ASDCharacter :
+	public ACharacter,
+	public IAbilitySystemInterface,
+	public IInteractor,
+	public IInventoryHolder
 {
 	GENERATED_BODY()
 
@@ -32,14 +37,21 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
+	
+	virtual void StopJumping() override;
+	
 	USDCharacterMovementComponent* GetSDCharacterMovementComponent() const { return SDCharacterMovementComponent;};
 
-	virtual void StopJumping() override;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {return AbilitySystemComponent; };
 
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
+	UAGR_InventoryComponent* GetInventory_Implementation() const override {return InventoryComponent; };
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	void AddInteractable_Implementation(UObject* Object) override;
+
+	void RemoveInteractable_Implementation(UObject* Object) override;
+	
 protected:
 
 	UFUNCTION(BlueprintCallable, Category = Movement)
@@ -48,9 +60,6 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = Movement)
 	void Look(const FVector2D& Value);
 
-	void AddInteractable_Implementation(UObject* Object) override;
-
-	void RemoveInteractable_Implementation(UObject* Object) override;
 private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
@@ -74,6 +83,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = Inventory, meta = (AllowPrivateAccess = true))
 	UAGR_InventoryComponent* InventoryComponent;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, meta = (AllowPrivateAccess = true))
 	UInteractorComponent* InteractorComponent;
 };

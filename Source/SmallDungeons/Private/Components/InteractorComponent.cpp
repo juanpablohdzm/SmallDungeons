@@ -24,7 +24,7 @@ void UInteractorComponent::Interact()
 void UInteractorComponent::AddInteractable(UObject* Object)
 {
 	const IInteractable* Interactable = Cast<IInteractable>(Object);
-	if (Interactable || InteractablesQueue.Contains(Object))
+	if (!Interactable || InteractablesQueue.Contains(Object))
 	{
 		return;
 	}
@@ -35,7 +35,8 @@ void UInteractorComponent::AddInteractable(UObject* Object)
 
 void UInteractorComponent::RemoveInteractable(UObject* Object)
 {
-	if (!Object)
+	const IInteractable* Interactable = Cast<IInteractable>(Object);
+	if (!Interactable)
 	{
 		return;
 	}
