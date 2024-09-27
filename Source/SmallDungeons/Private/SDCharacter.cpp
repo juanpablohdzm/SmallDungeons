@@ -103,14 +103,14 @@ void ASDCharacter::Look(const FVector2D& Value)
 	}
 }
 
-void ASDCharacter::AddInteractable_Implementation(UObject* Object)
+void ASDCharacter::AddInteractable_Implementation(AActor* Item)
 {
-	InteractorComponent->AddInteractable(Object);
+	InteractorComponent->AddInteractable(Item);
 }
 
-void ASDCharacter::RemoveInteractable_Implementation(UObject* Object)
+void ASDCharacter::RemoveInteractable_Implementation(AActor* Item)
 {
-	InteractorComponent->RemoveInteractable(Object);
+	InteractorComponent->RemoveInteractable(Item);
 }
 
 void ASDCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

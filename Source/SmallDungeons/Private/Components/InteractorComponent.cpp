@@ -18,7 +18,7 @@ void UInteractorComponent::Interact()
 		return;
 	}
 	
-	IInteractable::Execute_Interact(InteractablesQueue[0], this);
+	IInteractable::Execute_Interact(InteractablesQueue[0], GetOwner());
 }
 
 void UInteractorComponent::AddInteractable(UObject* Object)

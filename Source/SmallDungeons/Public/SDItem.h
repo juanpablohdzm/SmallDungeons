@@ -22,7 +22,7 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	virtual void Interact_Implementation(UObject* OtherInstigator) override;
+	virtual void Interact_Implementation(AActor* OtherInstigator) override;
 
 	virtual void PostInitializeComponents() override;
 	

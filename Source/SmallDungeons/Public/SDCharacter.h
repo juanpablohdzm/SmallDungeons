@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
-#include "Interfaces\InventoryHolder.h"
 #include "Interfaces/Interactor.h"
 #include "SDCharacter.generated.h"
 
@@ -26,8 +25,7 @@ UCLASS()
 class SMALLDUNGEONS_API ASDCharacter :
 	public ACharacter,
 	public IAbilitySystemInterface,
-	public IInteractor,
-	public IInventoryHolder
+	public IInteractor
 {
 	GENERATED_BODY()
 
@@ -43,14 +41,12 @@ public:
 	USDCharacterMovementComponent* GetSDCharacterMovementComponent() const { return SDCharacterMovementComponent;};
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {return AbilitySystemComponent; };
-
-	UAGR_InventoryComponent* GetInventory_Implementation() const override {return InventoryComponent; };
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	void AddInteractable_Implementation(UObject* Object) override;
+	void AddInteractable_Implementation(AActor* Item) override;
 
-	void RemoveInteractable_Implementation(UObject* Object) override;
+	void RemoveInteractable_Implementation(AActor* Item) override;
 	
 protected:
 
@@ -71,7 +67,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = true))
 	USDCharacterMovementComponent* SDCharacterMovementComponent;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	UInputMappingContext* DefaultMappingContext;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = Abilities, meta = (AllowPrivateAccess = true))

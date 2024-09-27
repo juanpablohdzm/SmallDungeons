@@ -3,9 +3,9 @@
 
 #include "SDItem.h"
 #include "AGR_Inventory_Runtime/Public/Inventory/Components/AGR_ItemComponent.h"
+#include "AGR_Inventory_Runtime/Public/Inventory/Libs/AGR_InventoryFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Interfaces/Interactor.h"
-#include "Interfaces/InventoryHolder.h"
 #include "Net/UnrealNetwork.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSDItem, Log, All)
@@ -47,25 +47,18 @@ void ASDItem::OnItemDroppedNative(const UAGR_InventoryComponent* InventoryCompon
 	InteractionCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
-void ASDItem::Interact_Implementation(UObject* OtherInstigator)
+void ASDItem::Interact_Implementation(AActor* OtherInstigator)
 {
-	if (OtherInstigator->IsA<IInteractor>())
+	IInteractor::Execute_RemoveInteractable(OtherInstigator, this);
+	if (const UAGR_InventoryComponent* InventoryComp = UAGR_InventoryFunctionLibrary::GetInventoryComponent(OtherInstigator))
 	{
-		IInteractor::Execute_RemoveInteractable(OtherInstigator, this);
-	}
+		bool success;
+		FString errorMsg;
+		ItemComponent->PickUpItem(success, errorMsg, InventoryComp);
 
-	if (OtherInstigator->IsA<IInventoryHolder>())
-	{
-		if (const UAGR_InventoryComponent* InventoryComp = IInventoryHolder::Execute_GetInventory(OtherInstigator))
+		if (!success)
 		{
-			bool success;
-			FString errorMsg;
-			ItemComponent->PickUpItem(success, errorMsg, InventoryComp);
-
-			if (!success)
-			{
-				UE_LOG(LogSDItem, Log, TEXT("Unable to pickup item: %s"), *errorMsg);
-			}
+			UE_LOG(LogSDItem, Log, TEXT("Unable to pickup item: %s"), *errorMsg);
 		}
 	}
 }
