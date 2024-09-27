@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "Interactable.generated.h"
 
+enum class EItemType : uint8;
 // This class does not need to be modified.
 UINTERFACE(Blueprintable)
 class UInteractable : public UInterface
@@ -23,5 +24,5 @@ class SMALLDUNGEONS_API IInteractable
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Interact(AActor* Instigator);
+	EItemType Interact(AActor* Instigator);
 };

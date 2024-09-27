@@ -1,11 +1,10 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SDItem.h"
+#include "Items/SDItem.h"
 #include "AGR_Inventory_Runtime/Public/Inventory/Components/AGR_ItemComponent.h"
 #include "AGR_Inventory_Runtime/Public/Inventory/Libs/AGR_InventoryFunctionLibrary.h"
 #include "Components/SphereComponent.h"
-#include "Interfaces/Interactor.h"
 #include "Net/UnrealNetwork.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSDItem, Log, All)
@@ -47,9 +46,8 @@ void ASDItem::OnItemDroppedNative(const UAGR_InventoryComponent* InventoryCompon
 	InteractionCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
-void ASDItem::Interact_Implementation(AActor* OtherInstigator)
+EItemType ASDItem::Interact_Implementation(AActor* OtherInstigator)
 {
-	IInteractor::Execute_RemoveInteractable(OtherInstigator, this);
 	if (const UAGR_InventoryComponent* InventoryComp = UAGR_InventoryFunctionLibrary::GetInventoryComponent(OtherInstigator))
 	{
 		bool success;
@@ -61,6 +59,7 @@ void ASDItem::Interact_Implementation(AActor* OtherInstigator)
 			UE_LOG(LogSDItem, Log, TEXT("Unable to pickup item: %s"), *errorMsg);
 		}
 	}
+	return ItemType;
 }
 
 void ASDItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Interfaces/Interactor.h"
+#include "Interfaces/Interactable.h"
 #include "InteractorComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteractableChanged);
@@ -18,20 +18,17 @@ public:
 	// Sets default values for this component's properties
 	UInteractorComponent();
 
-	UFUNCTION(BlueprintCallable)
-	void Interact();
+	UFUNCTION(BlueprintCallable, meta = (ExpandBoolAsExecs = "ReturnValue"))
+	bool InvokeInteractOnQueueHead(UPARAM(meta = (Bitmask, BitmaskEnum = EItemType))const int32 DequeueableType);
 
-	void AddInteractable(UObject* Object);
+	void QueueInteractable(const TScriptInterface<IInteractable>& Item);
 
-	void RemoveInteractable(UObject* Object);
-
-	UFUNCTION(BlueprintCallable)
-	UObject* GetInteractable();
+	void DequeueInteractable(const TScriptInterface<IInteractable>& Item);
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnInteractableChanged OnInteractableChanged;
 	
 private:
 	UPROPERTY(Transient)
-	TArray<UObject*> InteractablesQueue;
+	TArray<TScriptInterface<IInteractable>> InteractablesQueue;
 };

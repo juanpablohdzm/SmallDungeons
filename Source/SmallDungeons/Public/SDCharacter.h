@@ -44,9 +44,9 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	void AddInteractable_Implementation(AActor* Item) override;
+	void QueueInteractable_Implementation(const TScriptInterface<IInteractable>& Item) override;
 
-	void RemoveInteractable_Implementation(AActor* Item) override;
+	void DequeueInteractable_Implementation(const TScriptInterface<IInteractable>& Item) override;
 	
 protected:
 

@@ -11,41 +11,37 @@ UInteractorComponent::UInteractorComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UInteractorComponent::Interact()
+bool UInteractorComponent::InvokeInteractOnQueueHead(const int32 DequeueableType)
 {
 	if (InteractablesQueue.IsEmpty())
 	{
-		return;
+		return false;
 	}
-	
-	IInteractable::Execute_Interact(InteractablesQueue[0], GetOwner());
+
+	const TScriptInterface<IInteractable> Interactable = InteractablesQueue[0];
+	const int32 ItemType = static_cast<int32>(IInteractable::Execute_Interact(Interactable.GetObject(), GetOwner()));
+	if ((DequeueableType & ItemType) == ItemType)
+	{
+		DequeueInteractable(Interactable);
+	}
+
+	return true;
 }
 
-void UInteractorComponent::AddInteractable(UObject* Object)
+void UInteractorComponent::QueueInteractable(const TScriptInterface<IInteractable>& Item)
 {
-	const IInteractable* Interactable = Cast<IInteractable>(Object);
-	if (!Interactable || InteractablesQueue.Contains(Object))
+	if (InteractablesQueue.Contains(Item))
 	{
 		return;
 	}
 
-	InteractablesQueue.Add(Object);
+	InteractablesQueue.Add(Item);
 	OnInteractableChanged.Broadcast();
 }
 
-void UInteractorComponent::RemoveInteractable(UObject* Object)
+void UInteractorComponent::DequeueInteractable(const TScriptInterface<IInteractable>& Item)
 {
-	const IInteractable* Interactable = Cast<IInteractable>(Object);
-	if (!Interactable)
-	{
-		return;
-	}
-	InteractablesQueue.Remove(Object);
+	InteractablesQueue.Remove(Item);
 	OnInteractableChanged.Broadcast();
-}
-
-UObject* UInteractorComponent::GetInteractable()
-{
-	return InteractablesQueue.Num() > 0 ? InteractablesQueue[0] : nullptr;
 }
 

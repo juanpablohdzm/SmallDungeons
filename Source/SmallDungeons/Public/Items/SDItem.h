@@ -10,6 +10,7 @@
 
 class USphereComponent;
 class UAGR_ItemComponent;
+enum class EItemType : uint8;
 
 UCLASS()
 class SMALLDUNGEONS_API ASDItem : public AActor, public IInteractable
@@ -22,7 +23,7 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	virtual void Interact_Implementation(AActor* OtherInstigator) override;
+	virtual EItemType Interact_Implementation(AActor* OtherInstigator) override;
 
 	virtual void PostInitializeComponents() override;
 	
@@ -33,6 +34,8 @@ protected:
 	UFUNCTION()
 	virtual void OnItemDroppedNative(const UAGR_InventoryComponent* InventoryComponent, const FVector& DropLocation);
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EItemType ItemType;
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* MeshComponent;
@@ -42,4 +45,5 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, meta = (AllowPrivateAccess = true))
 	UAGR_ItemComponent* ItemComponent;
+
 };
